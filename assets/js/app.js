@@ -11,26 +11,63 @@ firebase.initializeApp(config);
   
 var database = firebase.database();
 
-// var connectionsRef = database.ref("/connections");
-// var connectedRef = database.ref(".info/connected");
+var connectionsRef = database.ref("/connections");
+var connectedRef = database.ref(".info/connected");
 
-// connectedRef.on("value", function(snapshot) {
+var playerOneName = '';
+var playerTwoName = '';
+var playerOneWins = 0;
+var playerOneLosses = 0;
+var playerTwoWins = 0;
+var playerTwoLosses = 0;
 
-//     // If they are connected..
-//     if (snapshot.val()) {
+//<--- tracks how many browsers are open/how many people are watching --->
+connectedRef.on("value", function(snapshot) {
+
+    if (snapshot.val()) {
   
-//       // Add user to the connections list.
-//       var con = connectionsRef.push(true);
+      var con = connectionsRef.push(true);
   
-//       // Remove user from the connection list when they disconnect.
-//       con.onDisconnect().remove();
-//     }
-// });
+      con.onDisconnect().remove();
+    }
+});
   
-// // When first loaded or when the connections list changes...
-// connectionsRef.on("value", function(snapshot) {
+connectionsRef.on("value", function(snapshot) {
   
-//     // Display the viewer count in the html.
-//     // The number of online users is the number of children in the connections list.
-//     $("#connected-viewers").text(snapshot.numChildren());
-// });
+    $(".people-watching").text(snapshot.numChildren());
+});
+
+
+function resetGame() {
+    $(".player-one-name").show();
+    $(".player-one-button").text("Join Game");
+    $(".player-one-button").prop("disabled", false);
+    $(".player-two-name").show();
+    $(".player-two-button").text("Join Game");
+    $(".player-two-name").prop("disabled", true);
+    playerOneName = '';
+    playerTwoName = '';
+    playerOneWins = 0;
+    playerOneLosses = 0;
+    playerTwoWins = 0;
+    playerTwoLosses = 0;
+}
+resetGame();
+
+$(".player-one-button").on("click", function() {
+    playerOneName = $(".player-one-name").val();
+    $(".player-one h1").text(playerOneName);
+    $(".player-one-name").hide();
+    $(".player-one-button").text("Player 1 has joined the game");
+    $(".player-one-button").prop("disabled", true);
+    $(".player-two-name").prop("disabled", false);
+    $(".player-two-button").prop("disabled", false);
+});
+
+$(".player-two-button").on("click", function() {
+    playerTwoName = $(".player-two-name").val();
+    $(".player-two h1").text(playerTwoName);
+    $(".player-two-name").hide();
+    $(".player-two-button").text("Player 2 has joined the game");
+    $(".player-two-button").prop("disabled", true);
+});
